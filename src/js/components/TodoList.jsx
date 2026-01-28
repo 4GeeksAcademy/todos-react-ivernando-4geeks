@@ -12,12 +12,12 @@ const TodoList = () => {
     const [crearUsuario, setCrearUsuario] = useState([])
     const [todo, setTodo] = useState("")
     const [todoId, setTodoId] = useState("")
-    
+
 
 
     useEffect(() => {
         readUsers()
-    
+
 
     }, [])
 
@@ -36,20 +36,20 @@ const TodoList = () => {
     }
 
 
-    const getTodos = () => {
+    const getTodos = (username) => {
 
-    		fetch("https://playground.4geeks.com/todo/users/" + selected)
-    			.then(resp => {
-    				if (!resp.ok) {
-    					throw new Error("something went wrong")
-    				}
-    				return resp.json()
-    			})
+        fetch("https://playground.4geeks.com/todo/users/" + username)
+            .then(resp => {
+                if (!resp.ok) {
+                    throw new Error("something went wrong")
+                }
+                return resp.json()
+            })
 
-    			.then(data => setUsersTodos(data.todos))
-    			.catch(err => console.log(err))
+            .then(data => setUsersTodos(data.todos))
+            .catch(err => console.log(err))
 
-    	}
+    }
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -110,63 +110,69 @@ const TodoList = () => {
     const SeleccionarClick = (user) => {
 
         setSelected(user.name);
-        getTodos();
+        getTodos(user.name);
 
         console.log("soy " + user.name);
     }
 
-    
+
 
 
 
     return (
         <div className="container">
-            <h1>¿Que tienes que hacer hoy?</h1>
-            <div className="container">
-                <input type="text"
-                    value={tarea}
-                    onChange={handleOnChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Agregar Tarea y presiona Enter" />
-
-                <ul>
-
-                </ul>
-                {
-                    agregarTarea.length > 0 ? agregarTarea.map((agregarTarea, index) => {
-                        return (
-                            <li key={index}>{agregarTarea}<FontAwesomeIcon className="float-end" icon={faXmarkCircle} size="lg" onClick={() => { handleDelete(index) }} /></li>
-                        )
-                    })
-                        :
-                        <p>¡Felicicades, no tienes nada que hacer por hoy!</p>
-                }
-
+            <h2>Usuarios agregados 👤 </h2>
+            
+                {users.map(el => <div className="container border p-2 bg-secondary-subtle" key={el.id} onClick={() => SeleccionarClick(el)}>{el.name} 🟢</div>)}
+            
+            <div className="mb-3 border border-4 p-4 text-center">
+            <h2>Agregar Usuario</h2>
+            <input type="text" className="form-control text-center" value={crearUsuario} onChange={handleOnChangeCrearUsuario} 
+                                id="exampleFormControlInput1" placeholder="escribe aqui el nombre del usuario nuevo"/>
+            <button type="button" className="btn btn-primary mt-4" onClick={SubirUsuarioFetch}>Crear Usuario</button>
             </div>
-            <h2>Usuarios</h2>
-            <hr/>
-            <ul>
-                {users.map(el => <li key={el.id} onClick={() => SeleccionarClick(el)}>{el.name}</li>)}
-            </ul>
-            <input type="text" value={crearUsuario} onChange={handleOnChangeCrearUsuario}></input>
-            <button type="button" className="btn btn-primary mx-4" onClick={SubirUsuarioFetch}>Crear Usuario</button>
-            <hr />
-            <br />
+            <div className="accordion" id="accordionExample">
+  <div className="accordion-item">
+    <h2 className="accordion-header">
+      <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        <h2> Todos de usuario {selected} 📝</h2>
+      </button>
+    </h2>
+    <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+      
+       
+                {usersTodos.map(el =><div className="accordion-body border-bottom" key={el.id}>{el.label} <p className="text-end">id= {el.id}</p></div>)}
+            
+      
+    </div>
+  </div>
+  </div>
+            <div className="my-4 border border-4 p-4 text-center">
             {selected ? (
                 <>
                     <h2>¿Quieres agregar un Todo a este usuario?</h2>
                     <h3 className="text-primary">{selected}</h3>
                     <br />
-                    <input type="text" placeholder="Agregar Todo" value={todo} onChange={handleOnChangeTodo} />
-                    <button className="btn btn-danger mx-4" onClick={CrearTodoFetch}>Crear Todo</button>
-                     </>)
-                     : (
-                <h2>Primero selecciona un Usuario para agregarle un Todo</h2>)}
-                <hr/>
-               <h2>Eliminar Todo</h2>
-               <input type="text" placeholder="escribe el ID del todo" value={todoId} onChange={handleOnChangeTodoId}/>
-               <button className="btn btn-warning mx-4" onClick={EliminarTodoFetch}>Eliminar Todo</button>
+                    <input type="text"  className ="form-control text-center" placeholder="escribe aqui un todo nuevo" value={todo} onChange={handleOnChangeTodo} />
+                    <button className="btn btn-warning mt-4" onClick={CrearTodoFetch}>Crear Todo</button>
+                </>
 
+            )
+                :
+                (
+                    <h2>Primero selecciona un Usuario para agregarle un Todo</h2>)}
+                    </div>
+            
+            <div className="mb-3 border border-4 p-4 text-center">
+                <h2>Eliminar Todo usando su ID</h2>
+            <input type="text" className="form-control text-center" placeholder="escribe el ID del todo" value={todoId} onChange={handleOnChangeTodoId} />
+            <button className="btn btn-danger mt-4" onClick={EliminarTodoFetch}>Eliminar Todo</button>
+            </div>
+<nav className="navbar navbar-expand-lg bg-success-subtle mt-4 p-5">
+  <div className="container-md">
+    <a className="navbar-brand mx-auto" href="https://www.youtube.com/watch?v=l_9nVU8zg0k" target="_blank">¡Y no olvides cepillarte los dientes!</a>
+  </div>
+</nav>
         </div>
     )
 }
